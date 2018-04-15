@@ -265,12 +265,6 @@
         <name>$PROJ_DIR$\..\..\firmware_common\drivers\adc12.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\..\firmware_common\drivers\ant.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\firmware_common\drivers\ant_api.c</name>
-      </file>
-      <file>
         <name>$PROJ_DIR$\..\..\firmware_common\drivers\buttons.c</name>
       </file>
       <file>

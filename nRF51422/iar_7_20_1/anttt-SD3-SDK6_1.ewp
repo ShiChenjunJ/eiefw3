@@ -1933,16 +1933,10 @@
         <name>$PROJ_DIR$\..\bsp\ant_integration.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\bsp\anttt-ehdw-04.c</name>
-      </file>
-      <file>
         <name>$PROJ_DIR$\..\bsp\ble_integration.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\bsp\bleperipheral.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\bsp\buttons.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\bsp\interrupts.c</name>
@@ -1957,6 +1951,12 @@
         <name>$PROJ_DIR$\..\bsp\utilities.c</name>
       </file>
     </group>
+    <file>
+      <name>$PROJ_DIR$\..\bsp\anttt-eief1-01.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\bsp\anttt-eief1-01.h</name>
+    </file>
   </group>
   <group>
     <name>_Nordic_SDK_6_1_0</name>
