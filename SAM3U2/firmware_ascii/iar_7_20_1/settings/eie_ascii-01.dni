@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-386698099
+Checksum=1426084686
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -44,5 +44,10 @@ mode=0
 [Breakpoints2]
 Count=0
 [Aliases]
-Count=0
-SuppressDialog=0
+A0=_ "D:\github_download\eiefw3\SAM3U2\firmware_ascii\application\main.c" ""
+A1=_ "D:\github_download\eiefw3\SAM3U2\firmware_ascii\drivers\sdcard.c" ""
+A2=_ "D:\github_download\eiefw3\SAM3U2\firmware_common\cmsis\core_cm3.h" ""
+A3=_ "D:\github_download\eiefw3\SAM3U2\firmware_common\drivers\interrupts.c" ""
+A4=_ "D:\github_download\eiefw3\SAM3U2\firmware_common\drivers\timer.c" ""
+Count=5
+SuppressDialog=1

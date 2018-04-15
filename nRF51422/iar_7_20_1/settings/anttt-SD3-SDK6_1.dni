@@ -101,5 +101,6 @@ mode=0
 [Breakpoints2]
 Count=0
 [Aliases]
-Count=0
-SuppressDialog=0
+A0=_ "D:\github_download\eiefw3\nRF51422\bsp\ant_integration.c" ""
+Count=1
+SuppressDialog=1
