@@ -77,8 +77,26 @@ Promises:
 */
 void GpioSetup(void)
 {
+  NRF_GPIO->PIN_CNF[P0_29_INDEX] = P0_29_LED_RED_CNF;
+  NRF_GPIO->PIN_CNF[P0_28_INDEX] = P0_28_LED_YLW_CNF;
+  NRF_GPIO->PIN_CNF[P0_27_INDEX] = P0_27_LED_GRN_CNF;
+  NRF_GPIO->PIN_CNF[P0_26_INDEX] = P0_26_LED_BLU_CNF;
+  NRF_GPIO->OUTSET = P0_29_;
+  NRF_GPIO->OUTSET = P0_28_;  
+  NRF_GPIO->OUTSET = P0_27_;
+  NRF_GPIO->OUTSET = P0_26_;
+  
+  /**/
+  NRF_GPIO->PIN_CNF[P0_08_INDEX] = P0_08_ANT_MRDY_CNF;
+  NRF_GPIO->PIN_CNF[P0_09_INDEX] = P0_09_ANT_SRDY_CNF;
+  NRF_GPIO->PIN_CNF[P0_10_INDEX] = P0_10_ANT_CS_CNF;
+  NRF_GPIO->PIN_CNF[P0_11_INDEX] = P0_11_ANT_SCK_CNF;
+  NRF_GPIO->PIN_CNF[P0_12_INDEX] = P0_11_ANT_SCK_CNF;
+  NRF_GPIO->PIN_CNF[P0_13_INDEX] = P0_13_ANT_MOSI_CNF;
+  
   
 } /* end GpioSetup() */
+
 
 
 /*----------------------------------------------------------------------------------------------------------------------
