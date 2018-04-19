@@ -220,6 +220,9 @@ It is clocked from HFCLK.  To get the desired 1ms tick use a compare period of 0
                                 (GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos) | \
                                 (GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos) ) 
 
+
+#define NRF_SPI0_ENABLE_CNF    ( SPI_ENABLE_ENABLE_Enabled     << SPI_ENABLE_ENABLE_Pos   )
+   
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */
 /*--------------------------------------------------------------------------------------------------------------------*/
