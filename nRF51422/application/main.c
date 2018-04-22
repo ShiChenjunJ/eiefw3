@@ -87,6 +87,11 @@ void main(void)
   {
     SocIntegrationHandler();
     AntttRunActiveState();
+    
+    if(NRF_SPI0->EVENTS_READY==1)
+    {
+      NRF_GPIO->OUTCLR = P0_28_;
+    }
    
     /* System sleep*/
     SystemSleep();

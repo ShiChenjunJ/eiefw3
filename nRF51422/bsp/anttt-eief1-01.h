@@ -222,6 +222,10 @@ It is clocked from HFCLK.  To get the desired 1ms tick use a compare period of 0
 
 
 #define NRF_SPI0_ENABLE_CNF    ( SPI_ENABLE_ENABLE_Enabled     << SPI_ENABLE_ENABLE_Pos   )
+#define ANT_SPI0_FRE_1Mbps     ( SPI_FREQUENCY_FREQUENCY_M1    << SPI_FREQUENCY_FREQUENCY_Pos )
+#define ANT_SPI0_CONFIG        ((SPIS_CONFIG_ORDER_MsbFirst    << SPIS_CONFIG_ORDER_Pos ) | \
+                                (SPIS_CONFIG_CPHA_Leading      << SPIS_CONFIG_CPHA_Pos)   | \
+                                (SPIS_CONFIG_CPOL_ActiveLow    << SPIS_CONFIG_CPOL_Pos )  )
    
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File */

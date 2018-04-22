@@ -173,6 +173,11 @@
         <option>
           <name>CCDefines</name>
           <state>EIE1</state>
+          <state>NRF_MRDY_SET_REG</state>
+          <state>NRF_SPI</state>
+          <state>NRF_SPI_CS_GPIO</state>
+          <state>NRF_SRDY_SET_REG</state>
+          <state>NRF_SPI_CS_PIN</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -2045,6 +2050,9 @@
         <name>$PROJ_DIR$\..\..\firmware_common\application\music.h</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\..\firmware_common\application\nrf_interface.h</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\..\firmware_common\application\user_app1.h</name>
       </file>
       <file>
@@ -2061,6 +2069,9 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\application\main.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\..\firmware_common\application\nrf_interface.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\firmware_common\application\user_app1.c</name>
