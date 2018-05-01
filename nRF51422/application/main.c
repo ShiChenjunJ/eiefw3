@@ -91,6 +91,7 @@ void main(void)
     if(NRF_SPI0->EVENTS_READY==1)
     {
       NRF_GPIO->OUTCLR = P0_28_;
+      NRF_GPIO->OUTCLR = P0_29_;
     }
    
     /* System sleep*/

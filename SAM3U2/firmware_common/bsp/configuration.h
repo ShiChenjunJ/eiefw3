@@ -92,7 +92,7 @@ Includes
 #include "user_app2.h"
 #include "user_app3.h"
 
-#include "nrf_interface.h"
+
 
 /**********************************************************************************************************************
 !!!!! External device peripheral assignments
