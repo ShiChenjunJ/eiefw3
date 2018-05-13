@@ -41,7 +41,8 @@ Function Declarations
 void AntttInitialize(void);
 void AntttRunActiveState(void);
 
-
+void ChangeMode(void);
+void BackWait(void);
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Private functions                                                                                                  */
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -52,8 +53,9 @@ void AntttRunActiveState(void);
 /*--------------------------------------------------------------------------------------------------------------------*/
 static void AntttSM_Idle(void);
 
-
-
+static void AntttSM_WAIT(void);
+static void AntttSM_TXD(void);
+static void AntttSM_RXD(void);
 #endif /* __ANTTT_H */
 
 

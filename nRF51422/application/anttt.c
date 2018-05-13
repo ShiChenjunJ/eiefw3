@@ -31,8 +31,8 @@ Variable names shall start with "Anttt_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type Anttt_pfnStateMachine;              /* The application state machine function pointer */
 
-static u32 u32RXD=0;
-static u32 u32TXD=1;
+static u32 u32RXD=0xFF;
+static u32 u32TXD=0xFF;
 
 /**********************************************************************************************************************
 Function Definitions
@@ -46,7 +46,49 @@ Function Definitions
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* Protected functions                                                                                                */
 /*--------------------------------------------------------------------------------------------------------------------*/
+void ChangeMode(void)
+{
+  u32 u32PinState=((0x00000300&NRF_GPIO->IN)>>8);
+  
+  switch(u32PinState)
+  {
+    /*
+    1:NOT READY or NOT WORK 
+    0:READY
+    */
 
+    /*MRDY=0 SRDY=1*/
+    case 2:
+      NRF_GPIO->OUTCLR = P0_28_;    
+      NRF_GPIO->OUTSET = P0_27_;
+      NRF_GPIO->OUTCLR = P0_10_;
+      NRF_SPI0->EVENTS_READY = 0x00000000;
+      Anttt_pfnStateMachine=AntttSM_TXD;
+    /*MRDY=1 SRDY=0*/
+    case 1:
+      NRF_GPIO->OUTCLR = P0_28_;
+      NRF_GPIO->OUTSET = P0_26_;
+      NRF_GPIO->OUTCLR = P0_10_;
+      NRF_SPI0->EVENTS_READY = 0x00000000;
+      Anttt_pfnStateMachine=AntttSM_RXD;
+      
+  default :break;
+  }
+}
+
+void BackWait(void)
+{
+  u32 u32PinState=((0x00000300&NRF_GPIO->IN)>>8);
+  if(u32PinState==3)
+  {
+    NRF_GPIO->OUTSET = P0_28_;  
+    NRF_GPIO->OUTCLR = P0_27_;
+    NRF_GPIO->OUTCLR = P0_26_;
+    NRF_GPIO->OUTSET = P0_10_;
+    NRF_SPI0->EVENTS_READY = 0x00000001;    
+    Anttt_pfnStateMachine=AntttSM_WAIT;
+  }
+}
 /*--------------------------------------------------------------------------------------------------------------------
 Function: AntttInitialize
 
@@ -59,7 +101,19 @@ Promises:
 */
 void AntttInitialize(void)
 {
-  Anttt_pfnStateMachine = AntttSM_Idle;
+  NRF_SPI0->PSELMISO     = 12;
+  NRF_SPI0->PSELMOSI     = 13;
+  NRF_SPI0->PSELSCK      = 11;
+  NRF_SPI0->FREQUENCY    = ANT_SPI0_FRE_1Mbps;
+  NRF_SPI0->CONFIG       = ANT_SPI0_CONFIG;
+  NRF_SPI0->EVENTS_READY = 0x00000001;
+  
+  NRF_SPI0->TXD = 0xFF;
+ 
+  NRF_TWI0->ENABLE=0x00000000UL;
+  NRF_SPI0->ENABLE= NRF_SPI0_ENABLE_CNF;
+  NRF_GPIO->OUTSET = P0_28_;
+  Anttt_pfnStateMachine = AntttSM_WAIT;
   
 } /* end AntttInitialize() */
 
@@ -80,39 +134,6 @@ void AntttRunActiveState(void)
 {
   Anttt_pfnStateMachine();
 
-      NRF_GPIO->OUTCLR = P0_10_;
-      u32RXD=NRF_SPI0->RXD;
-      
-
-      
-      if(NRF_SPI0->EVENTS_READY==1)
-      {
-        NRF_SPI0->TXD=u32TXD;
-        u32TXD=u32TXD++;
-        NRF_SPI0->EVENTS_READY=0;
-
-        if(u32TXD==0x10)
-        {
-          u32TXD=0;
-        }
-        
-        
-      if(u32RXD==0xFF)
-       {
-         NRF_GPIO->OUTSET = P0_29_;
-       }
-      else
-       {
-         NRF_GPIO->OUTCLR = P0_29_;
-       }
-       
-       
-      }
-      
-
-      
-      nrf_delay_us(100000);
-
 } /* end AntttRunActiveState */
 
 
@@ -131,9 +152,41 @@ State: AntttSM_Idle
 */
 static void AntttSM_Idle(void)
 {
-  
+      nrf_delay_us(100000);
 } 
 
+/*--------------------------------------------------------------------------------------------------------------------
+State: AntttSM_WAIT
+*/
+static void AntttSM_WAIT(void)
+{
+  ChangeMode();
+}
+/*--------------------------------------------------------------------------------------------------------------------
+State: AntttSM_TXD
+*/
+static void AntttSM_TXD(void)
+{
+  
+}
+
+/*--------------------------------------------------------------------------------------------------------------------
+State: AntttSM_RXD
+*/
+static void AntttSM_RXD(void)
+{
+  if((u32RXD>=0x00)&&(u32RXD<=0x08))
+  {
+   u32TXD=0xF1;
+  }  
+  NRF_SPI0->TXD=u32TXD;/**/
+  u32RXD=NRF_SPI0->RXD;
+  if(NRF_SPI0->EVENTS_READY==1)
+  {
+     NRF_SPI0->EVENTS_READY=0;
+  }
+  BackWait();
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* End of File                                                                                                        */

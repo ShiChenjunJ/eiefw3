@@ -220,6 +220,17 @@ It is clocked from HFCLK.  To get the desired 1ms tick use a compare period of 0
                                 (GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos) | \
                                 (GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos) ) 
 
+#define P0_08_ANT_MRDY         ((GPIO_PIN_CNF_DIR_Input        << GPIO_PIN_CNF_DIR_Pos)   | \
+                                (GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos) | \
+                                (GPIO_PIN_CNF_PULL_Disabled    << GPIO_PIN_CNF_PULL_Pos)  | \
+                                (GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos) | \
+                                (GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos) )
+
+#define P0_09_ANT_SRDY         ((GPIO_PIN_CNF_DIR_Input        << GPIO_PIN_CNF_DIR_Pos)   | \
+                                (GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos) | \
+                                (GPIO_PIN_CNF_PULL_Disabled    << GPIO_PIN_CNF_PULL_Pos)  | \
+                                (GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos) | \
+                                (GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos) )
 
 #define NRF_SPI0_ENABLE_CNF    ( SPI_ENABLE_ENABLE_Enabled     << SPI_ENABLE_ENABLE_Pos   )
 #define ANT_SPI0_FRE_1Mbps     ( SPI_FREQUENCY_FREQUENCY_M1    << SPI_FREQUENCY_FREQUENCY_Pos )

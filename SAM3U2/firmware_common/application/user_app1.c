@@ -65,7 +65,8 @@ static SspConfigurationType SPIConfig;
 static SspPeripheralType* MyTaskSsp;
 static u8 au8RxBuffer[100];
 static u8* pu8RxBuffer=au8RxBuffer;
-static u8 u8TMessage=0;
+static u8 u8TMessage=0xFF;
+static u8 u8DebugMes[1]={0xFF};
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -95,6 +96,9 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+  AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+  
   SPIConfig.SspPeripheral=USART2;
   SPIConfig.pCsGpioAddress=AT91C_BASE_PIOB;
   SPIConfig.u32CsPin=PB_22_ANT_USPI2_CS;
@@ -148,12 +152,6 @@ Promises:
 void UserApp1RunActiveState(void)
 {
     UserApp1_pfStateMachine();
-    if(WasButtonPressed(BUTTON0))
-    {
-      ButtonAcknowledge(BUTTON0);
-      u8TMessage=~u8TMessage;
-    }
-
 } /* end UserApp1RunActiveState */
 
 
@@ -162,12 +160,13 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void SlaveRx(void)
 {
-  if(au8RxBuffer[0]==0x0F)
+  if(au8RxBuffer[0]==0xF1)
   {
-    LedToggle(BLUE);
+   AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+   AT91C_BASE_PIOB->PIO_SODR=0x01000000;
   }
- 
-    SspWriteByte(MyTaskSsp,u8TMessage);
+  
+  SspWriteByte(MyTaskSsp,u8TMessage);
 }
 void SlaveTx(void)
 {
@@ -180,7 +179,13 @@ State Machine Function Definitions
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
 {
-    
+    DebugScanf(u8DebugMes);
+    u8TMessage= u8DebugMes[0]-'0';
+    if(u8TMessage>=0&&u8TMessage<=8)
+    {
+      AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+      AT91C_BASE_PIOB->PIO_CODR=0x01000000;
+    }
 } /* end UserApp1SM_Idle() */
      
 
