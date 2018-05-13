@@ -31,7 +31,8 @@ Variable names shall start with "Anttt_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type Anttt_pfnStateMachine;              /* The application state machine function pointer */
 
-
+static u32 u32RXD=0;
+static u32 u32TXD=1;
 
 /**********************************************************************************************************************
 Function Definitions
@@ -78,6 +79,39 @@ Promises:
 void AntttRunActiveState(void)
 {
   Anttt_pfnStateMachine();
+
+      NRF_GPIO->OUTCLR = P0_10_;
+      u32RXD=NRF_SPI0->RXD;
+      
+
+      
+      if(NRF_SPI0->EVENTS_READY==1)
+      {
+        NRF_SPI0->TXD=u32TXD;
+        u32TXD=u32TXD++;
+        NRF_SPI0->EVENTS_READY=0;
+
+        if(u32TXD==0x10)
+        {
+          u32TXD=0;
+        }
+        
+        
+      if(u32RXD==0xFF)
+       {
+         NRF_GPIO->OUTSET = P0_29_;
+       }
+      else
+       {
+         NRF_GPIO->OUTCLR = P0_29_;
+       }
+       
+       
+      }
+      
+
+      
+      nrf_delay_us(100000);
 
 } /* end AntttRunActiveState */
 

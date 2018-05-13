@@ -42,7 +42,7 @@ contraints but must complete execution regardless of success or failure of start
 2. Main loop.  This is an event-driven system that sequentially executes tasks that require servicing in the event queue.
 
 ***********************************************************************************************************************/
-void main(void)
+ void main(void)
 {
   G_u32SystemFlags |= _SYSTEM_INITIALIZING;
   
@@ -87,13 +87,7 @@ void main(void)
   {
     SocIntegrationHandler();
     AntttRunActiveState();
-    
-    if(NRF_SPI0->EVENTS_READY==1)
-    {
-      NRF_GPIO->OUTCLR = P0_28_;
-      NRF_GPIO->OUTCLR = P0_29_;
-    }
-   
+
     /* System sleep*/
     SystemSleep();
     

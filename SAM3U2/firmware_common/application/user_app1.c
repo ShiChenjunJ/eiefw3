@@ -61,8 +61,11 @@ Variable names shall start with "UserApp1_<type>" and be declared as static.
 ***********************************************************************************************************************/
 static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state machine function pointer */
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
-
-
+static SspConfigurationType SPIConfig;
+static SspPeripheralType* MyTaskSsp;
+static u8 au8RxBuffer[100];
+static u8* pu8RxBuffer=au8RxBuffer;
+static u8 u8TMessage=0;
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -92,6 +95,27 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  SPIConfig.SspPeripheral=USART2;
+  SPIConfig.pCsGpioAddress=AT91C_BASE_PIOB;
+  SPIConfig.u32CsPin=PB_22_ANT_USPI2_CS;
+  SPIConfig.eBitOrder=LSB_FIRST;
+  SPIConfig.eSspMode=SPI_SLAVE_FLOW_CONTROL;
+  SPIConfig.fnSlaveRxFlowCallback=&SlaveRx;
+  SPIConfig.fnSlaveTxFlowCallback=&SlaveTx;
+  SPIConfig.pu8RxBufferAddress=au8RxBuffer;
+  SPIConfig.ppu8RxNextByte=&pu8RxBuffer;
+  SPIConfig.u16RxBufferSize=128;
+
+  MyTaskSsp=SspRequest(&SPIConfig);
+  if(MyTaskSsp!=NULL)
+  {
+    LedOn(GREEN);
+  }
+  else
+  {
+    LedOn(WHITE);
+  }
+  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -123,7 +147,12 @@ Promises:
 */
 void UserApp1RunActiveState(void)
 {
-  UserApp1_pfStateMachine();
+    UserApp1_pfStateMachine();
+    if(WasButtonPressed(BUTTON0))
+    {
+      ButtonAcknowledge(BUTTON0);
+      u8TMessage=~u8TMessage;
+    }
 
 } /* end UserApp1RunActiveState */
 
@@ -131,7 +160,18 @@ void UserApp1RunActiveState(void)
 /*------------------------------------------------------------------------------------------------------------------*/
 /*! @privatesection */                                                                                            
 /*--------------------------------------------------------------------------------------------------------------------*/
-
+void SlaveRx(void)
+{
+  if(au8RxBuffer[0]==0x0F)
+  {
+    LedToggle(BLUE);
+  }
+ 
+    SspWriteByte(MyTaskSsp,u8TMessage);
+}
+void SlaveTx(void)
+{
+}
 
 /**********************************************************************************************************************
 State Machine Function Definitions
