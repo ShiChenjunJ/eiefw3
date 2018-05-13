@@ -53,7 +53,7 @@ extern volatile u32 G_u32SystemTime1ms;                   /*!< @brief From main.
 extern volatile u32 G_u32SystemTime1s;                    /*!< @brief From main.c */
 extern volatile u32 G_u32SystemFlags;                     /*!< @brief From main.c */
 extern volatile u32 G_u32ApplicationFlags;                /*!< @brief From main.c */
-
+extern volatile u8 G_u8DebugScanfCharCount;
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -66,7 +66,9 @@ static SspPeripheralType* MyTaskSsp;
 static u8 au8RxBuffer[100];
 static u8* pu8RxBuffer=au8RxBuffer;
 static u8 u8TMessage=0xFF;
-static u8 u8DebugMes[1]={0xFF};
+static u8 u8DebugMes[4]={0xFF,0,0,0};
+
+static bool bTX=FALSE;
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -160,16 +162,20 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void SlaveRx(void)
 {
-  if(au8RxBuffer[0]==0xF1)
-  {
-   AT91C_BASE_PIOB->PIO_SODR=0x00800000;
-   AT91C_BASE_PIOB->PIO_SODR=0x01000000;
-  }
-  
-  SspWriteByte(MyTaskSsp,u8TMessage);
+    if(au8RxBuffer[0]==0xF1)
+    {
+      AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+      AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+      u8TMessage=0xFF;
+      u8DebugMes[0]=0xFF;
+      au8RxBuffer[0]=0xFF;
+      bTX=FALSE;
+      DebugPrintf("\r\n");
+    }
 }
 void SlaveTx(void)
 {
+
 }
 
 /**********************************************************************************************************************
@@ -178,14 +184,30 @@ State Machine Function Definitions
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* What does this state do? */
 static void UserApp1SM_Idle(void)
-{
-    DebugScanf(u8DebugMes);
-    u8TMessage= u8DebugMes[0]-'0';
-    if(u8TMessage>=0&&u8TMessage<=8)
+{  
+    if(!bTX)
     {
-      AT91C_BASE_PIOB->PIO_SODR=0x00800000;
-      AT91C_BASE_PIOB->PIO_CODR=0x01000000;
+      if(G_u8DebugScanfCharCount)
+      {
+        DebugScanf(u8DebugMes);
+        
+        u8TMessage = u8DebugMes[0]-'0';
+        
+        if(u8TMessage>=0&&u8TMessage<=8)
+        {
+          AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+          AT91C_BASE_PIOB->PIO_CODR=0x01000000;
+        }
+        
+        bTX=TRUE;
+      }
     }
+    else
+    {
+     SspWriteByte(MyTaskSsp,u8TMessage);
+    }
+
+
 } /* end UserApp1SM_Idle() */
      
 
