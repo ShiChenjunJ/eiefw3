@@ -69,6 +69,14 @@ static u8 u8TMessage=0xFF;
 static u8 u8DebugMes[4]={0xFF,0,0,0};
 
 static bool bTX=FALSE;
+
+static u8 au8Checkerboard[9]={0,0,0,0,0,0,0,0,0};
+static u8 au8String1[]="   |   |   \n\r";
+static u8 au8StringA[]=" 0 | 1 | 2 \n\r";
+static u8 au8StringB[]=" 3 | 4 | 5 \n\r";
+static u8 au8StringC[]=" 6 | 7 | 8 \n\r";
+static u8 au8String2[]="--- --- ---\n\r";
+
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -122,6 +130,18 @@ void UserApp1Initialize(void)
     LedOn(WHITE);
   }
   
+  DebugPrintf("game start\n\r");
+  DebugPrintf(au8String1);
+  DebugPrintf(au8StringA);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8String2);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8StringB);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8String2);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8StringC);
+  DebugPrintf(au8String1);  
   /* If good initialization, set state to Idle */
   if( 1 )
   {
@@ -171,13 +191,150 @@ void SlaveRx(void)
       au8RxBuffer[0]=0xFF;
       bTX=FALSE;
       DebugPrintf("\r\n");
+      LedOff(BLUE);
     }
 }
-void SlaveTx(void)
+void SlaveTx()
 {
-
+  
 }
 
+bool CheckBoard(u8 u8Location,u8 *pau8Board)
+{
+  if(*(pau8Board+u8Location)==0)
+  {
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
+
+bool PrintBoard(u8 u8Location,u8 u8ChessPlayer)
+{
+  /* 1pc = * ; 0phone= + 
+ 
+               0123456789
+ au8StringA[]=" 0 | 1 | 2 \n\r";
+ au8StringB[]=" 3 | 4 | 5 \n\r";
+ au8StringC[]=" 6 | 7 | 8 \n\r";
+  */
+  switch(u8Location)
+  {
+  case 0:
+    if(u8ChessPlayer)
+    {
+      *(au8StringA+1)='*';
+    }
+    else
+    {
+      *(au8StringA+1)='+';
+    }
+    break;
+  case 1:
+    if(u8ChessPlayer)
+    {
+      *(au8StringA+5)='*';
+    }
+    else
+    {
+      *(au8StringA+5)='+';
+    }    
+    ;break;
+  case 2:
+    if(u8ChessPlayer)
+    {
+      *(au8StringA+9)='*';
+    }
+    else
+    {
+      *(au8StringA+9)='+';
+    }    
+    ;
+    break;
+
+  case 3:
+    if(u8ChessPlayer)
+    {
+      *(au8StringB+1)='*';
+    }
+    else
+    {
+      *(au8StringB+1)='+';
+    }
+    break;
+  case 4:
+    if(u8ChessPlayer)
+    {
+      *(au8StringB+5)='*';
+    }
+    else
+    {
+      *(au8StringB+5)='+';
+    }    
+    ;break;
+  case 5:
+    if(u8ChessPlayer)
+    {
+      *(au8StringB+9)='*';
+    }
+    else
+    {
+      *(au8StringB+9)='+';
+    }    
+    ;
+    break;    
+    
+  case 6:
+    if(u8ChessPlayer)
+    {
+      *(au8StringC+1)='*';
+    }
+    else
+    {
+      *(au8StringC+1)='+';
+    }
+    break;
+  case 7:
+    if(u8ChessPlayer)
+    {
+      *(au8StringC+5)='*';
+    }
+    else
+    {
+      *(au8StringC+5)='+';
+    }    
+    ;break;
+  case 8:
+    if(u8ChessPlayer)
+    {
+      *(au8StringC+9)='*';
+    }
+    else
+    {
+      *(au8StringC+9)='+';
+    }    
+    ;
+    break;
+    
+  default:break;
+  }
+  DebugPrintf("\n\r");
+  DebugPrintf(au8String1);
+  DebugPrintf(au8StringA);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8String2);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8StringB);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8String2);
+  DebugPrintf(au8String1);
+  DebugPrintf(au8StringC);
+  DebugPrintf(au8String1);  
+  
+  return TRUE;
+}
 /**********************************************************************************************************************
 State Machine Function Definitions
 **********************************************************************************************************************/
@@ -191,22 +348,36 @@ static void UserApp1SM_Idle(void)
       {
         DebugScanf(u8DebugMes);
         
-        u8TMessage = u8DebugMes[0]-'0';
-        
-        if(u8TMessage>=0&&u8TMessage<=8)
+        if(u8DebugMes[0]>='0'&&u8DebugMes[0]<='8')
         {
-          AT91C_BASE_PIOB->PIO_SODR=0x00800000;
-          AT91C_BASE_PIOB->PIO_CODR=0x01000000;
-        }
-        
-        bTX=TRUE;
+          u8TMessage = u8DebugMes[0]-'0';
+          LedOn(BLUE);
+     
+          if(CheckBoard(u8TMessage,au8Checkerboard))
+          {
+            au8Checkerboard[u8TMessage]=0x0A;/* 0x0A PC*/
+            if(PrintBoard(u8TMessage,1))
+            {
+              AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+              AT91C_BASE_PIOB->PIO_CODR=0x01000000;
+              bTX=TRUE;
+            }
+          }
+          else
+          {
+            DebugPrintf("\n\r CAN NOT LOAD! \n\r");
+          }
+         }
+        else
+        {
+          DebugPrintf("\n\r Please input 0~8 \n\r");
+        }/*end bebug*/     
       }
     }
     else
     {
      SspWriteByte(MyTaskSsp,u8TMessage);
     }
-
 
 } /* end UserApp1SM_Idle() */
      
