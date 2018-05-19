@@ -21,7 +21,7 @@ extern volatile u32 G_u32SystemFlags;                  /* From main.c */
 
 extern volatile u32 G_u32SystemTime1ms;                /* From board-specific source file */
 extern volatile u32 G_u32SystemTime1s;                 /* From board-specific source file */
-
+extern volatile u8 G_u8BLE_RX;
 
 /***********************************************************************************************************************
 Global variable definitions with scope limited to this local application.
@@ -334,7 +334,69 @@ Promises:
 static void CallbackBleperipheralEngenuicsDataRx(u8* u8Data_, u8 u8Length_)
 {
   // Forward handling to ANTTT module.
-  
+  if(u8Length_ == 1)
+	{
+		switch(*u8Data_)
+		{
+			case '0':
+			{
+				G_u8BLE_RX    = 0x00;
+				break;
+			}
+			
+			case '1':
+			{
+				G_u8BLE_RX    = 0x01;
+				break;
+			}
+			
+			case '2':
+			{
+				G_u8BLE_RX    = 0x02;
+				break;
+			}
+			case '3':
+			{
+				G_u8BLE_RX    = 0x03;
+				break;
+			}
+			case '4':
+			{
+				G_u8BLE_RX    = 0x04;
+				break;
+			}
+			case '5':
+			{
+				G_u8BLE_RX    = 0x05;
+				break;
+			}
+			case '6':
+			{
+				G_u8BLE_RX    = 0x06;
+				break;
+			}
+			case '7':
+			{
+				G_u8BLE_RX   = 0x07;
+				break;
+			}
+			case '8':
+			{
+				G_u8BLE_RX    = 0x08;
+				break;
+			}
+			
+			default:
+			{
+				G_u8BLE_RX    = 0xF2;
+				break;
+			}
+		}
+	}
+	else
+	{
+		G_u8BLE_RX   = 0xF2;
+	}
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

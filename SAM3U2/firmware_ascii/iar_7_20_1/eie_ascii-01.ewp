@@ -173,11 +173,6 @@
         <option>
           <name>CCDefines</name>
           <state>EIE1</state>
-          <state>NRF_MRDY_SET_REG</state>
-          <state>NRF_SPI</state>
-          <state>NRF_SPI_CS_GPIO</state>
-          <state>NRF_SRDY_SET_REG</state>
-          <state>NRF_SPI_CS_PIN</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1943,18 +1938,6 @@
       <name>Include</name>
       <file>
         <name>$PROJ_DIR$\..\..\firmware_common\drivers\adc12.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\firmware_common\drivers\ant.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\firmware_common\drivers\ant_api.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\firmware_common\drivers\antdefines.h</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\..\firmware_common\drivers\antmessage.h</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\..\firmware_common\drivers\buttons.h</name>

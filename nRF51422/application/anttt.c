@@ -33,7 +33,9 @@ static fnCode_type Anttt_pfnStateMachine;              /* The application state 
 
 static u32 u32RXD=0xFF;
 static u32 u32TXD=0xFF;
-
+static u8 u8BLE_Data=0;
+volatile u8 G_u8BLE_RX=0xFF;
+static bool bTX=0;
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -52,23 +54,21 @@ void ChangeMode(void)
   
   switch(u32PinState)
   {
-    /*
-    1:NOT READY or NOT WORK 
-    0:READY
-    */
-
-    /*MRDY=0 SRDY=1*/
-    case 2:
-      NRF_GPIO->OUTCLR = P0_28_;    
-      NRF_GPIO->OUTSET = P0_27_;
-      NRF_GPIO->OUTCLR = P0_10_;
-      Anttt_pfnStateMachine=AntttSM_TXD;
-    /*MRDY=1 SRDY=0*/
     case 1:
-      NRF_GPIO->OUTCLR = P0_28_;
-      NRF_GPIO->OUTSET = P0_26_;
       NRF_GPIO->OUTCLR = P0_10_;
+      NRF_GPIO->OUTCLR = P0_28_;
+      NRF_GPIO->OUTSET = P0_27_;
+      u8BLE_Data=0;
       Anttt_pfnStateMachine=AntttSM_RXD;
+      break;
+
+    case 2:
+      NRF_GPIO->OUTCLR = P0_10_;
+      NRF_GPIO->OUTCLR = P0_28_;    
+      NRF_GPIO->OUTSET = P0_26_;
+      
+      Anttt_pfnStateMachine=AntttSM_TXD;
+      break;
       
   default :break;
   }
@@ -77,14 +77,18 @@ void ChangeMode(void)
 void BackWait(void)
 {
   u32 u32PinState=((0x00000300&NRF_GPIO->IN)>>8);
+  
   if(u32PinState==3)
   {
+    G_u8BLE_RX=0xFF;
     u32TXD=0xFF;
-    
+    u32RXD=0xFF;
+    bTX=0;
     NRF_GPIO->OUTSET = P0_28_;  
     NRF_GPIO->OUTCLR = P0_27_;
     NRF_GPIO->OUTCLR = P0_26_;
-    NRF_GPIO->OUTSET = P0_10_; 
+    NRF_GPIO->OUTSET = P0_10_;
+    NRF_SPI0->EVENTS_READY=1;
     Anttt_pfnStateMachine=AntttSM_WAIT;
   }
 }
@@ -105,13 +109,14 @@ void AntttInitialize(void)
   NRF_SPI0->PSELSCK      = 11;
   NRF_SPI0->FREQUENCY    = ANT_SPI0_FRE_1Mbps;
   NRF_SPI0->CONFIG       = ANT_SPI0_CONFIG;
-  NRF_SPI0->EVENTS_READY = 0x00000000;
+  NRF_SPI0->EVENTS_READY = 0x00000001;
   
   NRF_SPI0->TXD = 0xFF;
  
   NRF_TWI0->ENABLE=0x00000000UL;
   NRF_SPI0->ENABLE= NRF_SPI0_ENABLE_CNF;
   NRF_GPIO->OUTSET = P0_28_;
+  
   Anttt_pfnStateMachine = AntttSM_WAIT;
   
 } /* end AntttInitialize() */
@@ -166,6 +171,17 @@ State: AntttSM_TXD
 */
 static void AntttSM_TXD(void)
 {
+  if((G_u8BLE_RX>=0)&&(G_u8BLE_RX<=8))
+  {
+  if(NRF_SPI0->EVENTS_READY==1)
+  {
+     NRF_SPI0->EVENTS_READY=0;
+  }
+  nrf_delay_us(100);
+  NRF_SPI0->TXD=G_u8BLE_RX;
+  u32RXD=NRF_SPI0->RXD; 
+  }
+  BackWait(); 
   
 }
 
@@ -174,18 +190,21 @@ State: AntttSM_RXD
 */
 static void AntttSM_RXD(void)
 {
+ 
   if(NRF_SPI0->EVENTS_READY==1)
   {
      NRF_SPI0->EVENTS_READY=0;
   }
+  nrf_delay_us(100);
   
-  NRF_SPI0->TXD=u32TXD;/**/
-  u32RXD=NRF_SPI0->RXD; 
-  
-  if((u32RXD>=0x00)&&(u32RXD<=0x08))
+  NRF_SPI0->TXD=u32TXD;
+  u32RXD=NRF_SPI0->RXD;
+  if((u32RXD>=0)&&(u32RXD<9))
   {
-   u32TXD=0xF1;
+    u8BLE_Data=(u8)u32RXD;
+    u32TXD=0xF1;
   } 
+
   BackWait();
 }
 

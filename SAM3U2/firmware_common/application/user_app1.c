@@ -63,20 +63,23 @@ static fnCode_type UserApp1_pfStateMachine;               /*!< @brief The state 
 //static u32 UserApp1_u32Timeout;                           /*!< @brief Timeout counter used across states */
 static SspConfigurationType SPIConfig;
 static SspPeripheralType* MyTaskSsp;
-static u8 au8RxBuffer[100];
+static u8 au8RxBuffer[128];
 static u8* pu8RxBuffer=au8RxBuffer;
 static u8 u8TMessage=0xFF;
 static u8 u8DebugMes[4]={0xFF,0,0,0};
 
-static bool bTX=FALSE;
+static u8 au8Checkerboard[9]={0,0,0,0,0,0,0,0,0};/*0x0A:PC 0x0B:phone*/
+static u32 u32Time=0;
+static u8 u8PHOload=0xFF;
 
-static u8 au8Checkerboard[9]={0,0,0,0,0,0,0,0,0};
-static u8 au8String1[]="   |   |   \n\r";
-static u8 au8StringA[]=" 0 | 1 | 2 \n\r";
-static u8 au8StringB[]=" 3 | 4 | 5 \n\r";
-static u8 au8StringC[]=" 6 | 7 | 8 \n\r";
-static u8 au8String2[]="--- --- ---\n\r";
-
+static u8 au8StringBoard[][12]={
+                              "---|---|---",
+                              " 0 | 1 | 2 ",
+                              "---|---|---",
+                              " 3 | 4 | 5 ",
+                              "---|---|---",
+                              " 6 | 7 | 8 ",
+                              "---|---|---"};
 /**********************************************************************************************************************
 Function Definitions
 **********************************************************************************************************************/
@@ -106,8 +109,13 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
-  AT91C_BASE_PIOB->PIO_SODR=0x00800000;
-  AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
   
   SPIConfig.SspPeripheral=USART2;
   SPIConfig.pCsGpioAddress=AT91C_BASE_PIOB;
@@ -130,22 +138,17 @@ void UserApp1Initialize(void)
     LedOn(WHITE);
   }
   
-  DebugPrintf("game start\n\r");
-  DebugPrintf(au8String1);
-  DebugPrintf(au8StringA);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8String2);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8StringB);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8String2);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8StringC);
-  DebugPrintf(au8String1);  
+  DebugPrintf("game start");
+  DebugLineFeed();
+  for(u8 i=0;i<8;i++)
+  {
+    DebugPrintf(au8StringBoard[i]);
+    DebugLineFeed();
+  }
   /* If good initialization, set state to Idle */
   if( 1 )
-  {
-    UserApp1_pfStateMachine = UserApp1SM_Idle;
+  { UserApp1_pfStateMachine = UserApp1SM_Delay;
+    /*UserApp1_pfStateMachine = UserApp1SM_Idle;*/
   }
   else
   {
@@ -187,201 +190,426 @@ void SlaveRx(void)
       AT91C_BASE_PIOB->PIO_SODR=0x00800000;
       AT91C_BASE_PIOB->PIO_SODR=0x01000000;
       u8TMessage=0xFF;
-      u8DebugMes[0]=0xFF;
       au8RxBuffer[0]=0xFF;
-      bTX=FALSE;
-      DebugPrintf("\r\n");
-      LedOff(BLUE);
+      u32Time=G_u32SystemTime1ms;
+      UserApp1_pfStateMachine=UserApp1SM_Delay;
+      return;
     }
+    
+      if((au8RxBuffer[0]>=0)&&(au8RxBuffer[0]<=8))
+      {
+          AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+          AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+ 
+          u8PHOload=au8RxBuffer[0];
+          u8TMessage=0xFF;
+          au8RxBuffer[0]=0xFF;
+          UserApp1_pfStateMachine=UserApp1SM_PHONE2;
+      }
 }
-void SlaveTx()
+void SlaveTx(void)
 {
   
 }
 
 bool CheckBoard(u8 u8Location,u8 *pau8Board)
 {
-  if(*(pau8Board+u8Location)==0)
+  if(*(pau8Board+u8Location))
   {
-    return TRUE;
+    return FALSE;
   }
   else
   {
-    return FALSE;
+    return TRUE;
   }
 }
 
 bool PrintBoard(u8 u8Location,u8 u8ChessPlayer)
 {
   /* 1pc = * ; 0phone= + 
- 
-               0123456789
- au8StringA[]=" 0 | 1 | 2 \n\r";
- au8StringB[]=" 3 | 4 | 5 \n\r";
- au8StringC[]=" 6 | 7 | 8 \n\r";
+    u8StringBoard[][14]={      0123456789
+                            0 "---|---|---
+                            1 " 0 | 1 | 2 
+                            2 "---|---|---
+                            3 " 3 | 4 | 5 
+                            4 "---|---|---
+                            5 " 6 | 7 | 8 
+                            6 "---|---|---
   */
   switch(u8Location)
   {
   case 0:
     if(u8ChessPlayer)
     {
-      *(au8StringA+1)='*';
+      *(&au8StringBoard[1][1])='*';
     }
     else
     {
-      *(au8StringA+1)='+';
+      *(&au8StringBoard[1][1])='X';
     }
-    break;
+    return TRUE;
+    
   case 1:
     if(u8ChessPlayer)
     {
-      *(au8StringA+5)='*';
+      *(&au8StringBoard[1][5])='*';
     }
     else
     {
-      *(au8StringA+5)='+';
-    }    
-    ;break;
+      *(&au8StringBoard[1][5])='X';
+    }  
+    return TRUE;
+    
   case 2:
     if(u8ChessPlayer)
     {
-      *(au8StringA+9)='*';
+      *(&au8StringBoard[1][9])='*';
     }
     else
     {
-      *(au8StringA+9)='+';
-    }    
-    ;
-    break;
+      *(&au8StringBoard[1][9])='X';
+    }
+    return TRUE;   
 
   case 3:
     if(u8ChessPlayer)
     {
-      *(au8StringB+1)='*';
+      *(&au8StringBoard[3][1])='*';
     }
     else
     {
-      *(au8StringB+1)='+';
+      *(&au8StringBoard[3][1])='X';
     }
-    break;
+    return TRUE;
+    
   case 4:
     if(u8ChessPlayer)
     {
-      *(au8StringB+5)='*';
+      *(&au8StringBoard[3][5])='*';
     }
     else
     {
-      *(au8StringB+5)='+';
-    }    
-    ;break;
+      *(&au8StringBoard[3][5])='X';
+    }
+    return TRUE;    
+    
   case 5:
     if(u8ChessPlayer)
     {
-      *(au8StringB+9)='*';
+      *(&au8StringBoard[3][9])='*';
     }
     else
     {
-      *(au8StringB+9)='+';
-    }    
-    ;
-    break;    
+      *(&au8StringBoard[3][9])='X';
+    } 
+    return TRUE;
     
   case 6:
     if(u8ChessPlayer)
     {
-      *(au8StringC+1)='*';
+      *(&au8StringBoard[5][1])='*';
     }
     else
     {
-      *(au8StringC+1)='+';
+      *(&au8StringBoard[5][1])='X';
     }
-    break;
+    return TRUE;
+    
   case 7:
     if(u8ChessPlayer)
     {
-      *(au8StringC+5)='*';
+      *(&au8StringBoard[5][5])='*';
     }
     else
     {
-      *(au8StringC+5)='+';
+      *(&au8StringBoard[5][5])='X';
     }    
-    ;break;
+    return TRUE;
+    
   case 8:
     if(u8ChessPlayer)
     {
-      *(au8StringC+9)='*';
+      *(&au8StringBoard[5][9])='*';
     }
     else
     {
-      *(au8StringC+9)='+';
-    }    
-    ;
-    break;
-    
-  default:break;
+      *(&au8StringBoard[5][9])='X';
+    }  
+    return TRUE;
+
+  default:return FALSE;
   }
-  DebugPrintf("\n\r");
-  DebugPrintf(au8String1);
-  DebugPrintf(au8StringA);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8String2);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8StringB);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8String2);
-  DebugPrintf(au8String1);
-  DebugPrintf(au8StringC);
-  DebugPrintf(au8String1);  
-  
-  return TRUE;
 }
+
+void Printfgame(void)
+{
+  DebugLineFeed();
+  for(u8 i=0;i<8;i++)
+  {
+    DebugPrintf(au8StringBoard[i]);
+    DebugLineFeed();
+  }
+}
+
+void CheckWinner(u8 *u8Board,PlayerType Player)
+{
+  /*012*/
+  if((*(u8Board+0)==*(u8Board+1))&&(*(u8Board+1)==*(u8Board+2))&&(*(u8Board+2)!=0))
+  {
+    if(*(u8Board+0)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  }
+ 
+  /*345*/
+  if((*(u8Board+3)==*(u8Board+4))&&(*(u8Board+4)==*(u8Board+5))&&(*(u8Board+5)!=0))
+  {
+    if(*(u8Board+3)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  }  
+
+  /*678*/
+  if((*(u8Board+6)==*(u8Board+7))&&(*(u8Board+7)==*(u8Board+8))&&(*(u8Board+8)!=0))
+  {
+    if(*(u8Board+6)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  }  
+
+  /*036*/
+  if((*(u8Board+0)==*(u8Board+3))&&(*(u8Board+3)==*(u8Board+6))&&(*(u8Board+6)!=0))
+  {
+    if(*(u8Board+0)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  }  
+  
+  /*147*/
+  if((*(u8Board+1)==*(u8Board+4))&&(*(u8Board+4)==*(u8Board+7))&&(*(u8Board+7)!=0))
+  {
+    if(*(u8Board+1)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  } 
+
+  /*258*/
+  if((*(u8Board+2)==*(u8Board+5))&&(*(u8Board+5)==*(u8Board+8))&&(*(u8Board+8)!=0))
+  {
+    if(*(u8Board+2)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  }
+  
+
+  /*048*/
+  if((*(u8Board+0)==*(u8Board+4))&&(*(u8Board+4)==*(u8Board+8))&&(*(u8Board+8)!=0))
+  {
+    if(*(u8Board+0)==0x0A)
+    {
+      DebugPrintf("\n\rPC winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugPrintf("\n\rPhone winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  } 
+
+  /*246*/
+  if((*(u8Board+2)==*(u8Board+4))&&(*(u8Board+4)==*(u8Board+6))&&(*(u8Board+6)!=0))
+  {
+    if(*(u8Board+2)==0x0A)
+    {
+      DebugLineFeed();
+      DebugPrintf("PC-winner");
+    }
+    if(*(u8Board+1)==0x0B)
+    {
+      DebugLineFeed();
+      DebugPrintf("Phone-winner");
+    }
+    
+     UserApp1_pfStateMachine = UserApp1SM_ReStart;
+     return;
+  }   
+
+  if(Player==PCplayer)
+  {
+    AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+    AT91C_BASE_PIOB->PIO_CODR=0x01000000;
+    UserApp1_pfStateMachine = Chat;
+  }
+  else if(Player==IPHONEplayer)
+  {   
+    AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+    AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+    UserApp1_pfStateMachine = UserApp1SM_Idle;
+  }
+
+}
+
 /**********************************************************************************************************************
 State Machine Function Definitions
 **********************************************************************************************************************/
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* What does this state do? */
+static void Chat(void)
+{
+  u32 u32PB22=(AT91C_BASE_PIOB->PIO_PDSR&0x00400000);
+  if(!u32PB22)
+  {
+    SspWriteByte(MyTaskSsp,u8TMessage);
+  }
+}
+
 static void UserApp1SM_Idle(void)
 {  
-    if(!bTX)
+  DebugScanf(u8DebugMes);
+
+  if(u8DebugMes[0]>='0'&&u8DebugMes[0]<='8')
     {
-      if(G_u8DebugScanfCharCount)
+      u8TMessage = u8DebugMes[0]-'0';
+      u8DebugMes[0]=0xFF;
+      if(CheckBoard(u8TMessage,au8Checkerboard))
+        {
+          au8Checkerboard[u8TMessage]=0x0A;/* 0x0A PC*/
+          if(PrintBoard(u8TMessage,1))
+          {
+            Printfgame();
+            /*CheckWinner(au8Checkerboard,PCplayer);*/
+          }
+        }
+      else
       {
-        DebugScanf(u8DebugMes);
-        
-        if(u8DebugMes[0]>='0'&&u8DebugMes[0]<='8')
-        {
-          u8TMessage = u8DebugMes[0]-'0';
-          LedOn(BLUE);
-     
-          if(CheckBoard(u8TMessage,au8Checkerboard))
-          {
-            au8Checkerboard[u8TMessage]=0x0A;/* 0x0A PC*/
-            if(PrintBoard(u8TMessage,1))
-            {
-              AT91C_BASE_PIOB->PIO_SODR=0x00800000;
-              AT91C_BASE_PIOB->PIO_CODR=0x01000000;
-              bTX=TRUE;
-            }
-          }
-          else
-          {
-            DebugPrintf("\n\r CAN NOT LOAD! \n\r");
-          }
-         }
-        else
-        {
-          DebugPrintf("\n\r Please input 0~8 \n\r");
-        }/*end bebug*/     
+        DebugLineFeed();
+        DebugPrintf("CAN NOT LOAD!");
+        DebugLineFeed();
       }
-    }
-    else
-    {
-     SspWriteByte(MyTaskSsp,u8TMessage);
-    }
+    }/*end bebug*/     
 
 } /* end UserApp1SM_Idle() */
-     
 
+
+static void UserApp1SM_PHONE2(void)
+{
+  u32 u32PB22=(AT91C_BASE_PIOB->PIO_PDSR&0x00400000);
+  if(u32PB22)
+  {
+    if(CheckBoard(u8PHOload,au8Checkerboard))
+      {
+        au8Checkerboard[u8PHOload]=0x0B;
+        if((PrintBoard(u8PHOload,0)))
+        {
+        Printfgame();  
+        /*CheckWinner(au8Checkerboard,IPHONEplayer);*/
+        }
+      }
+    else
+    {
+      DebugLineFeed();
+      DebugPrintf("CAN NOT LOAD!");
+      DebugLineFeed();
+      UserApp1_pfStateMachine = UserApp1SM_Delay; 
+    }
+    u8PHOload=0xFF;
+  }
+}
+static void UserApp1SM_Delay(void)
+{
+  if(IsTimeUp(&u32Time,100))
+  {
+     AT91C_BASE_PIOB->PIO_CODR=0x00800000;
+     AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+     UserApp1_pfStateMachine = Chat;
+  }
+}
+
+
+static void UserApp1SM_ReStart(void)
+{
+  if(WasButtonPressed(BUTTON0))
+  {
+    ButtonAcknowledge(BUTTON0);
+    AT91C_BASE_PIOB->PIO_SODR=0x00800000;
+    AT91C_BASE_PIOB->PIO_SODR=0x01000000;
+    G_u8DebugScanfCharCount=0;
+    u8 *u8BoardClear;
+    u8BoardClear=au8Checkerboard;
+    for(u8 i=0;i<9;i++)
+    {
+      *(u8BoardClear+i)=0;
+    }
+
+  DebugPrintf("\n\rgame restart");
+  *(&au8StringBoard[1][1])='0';
+  *(&au8StringBoard[1][5])='1';
+  *(&au8StringBoard[1][9])='2';
+  *(&au8StringBoard[3][1])='3';
+  *(&au8StringBoard[3][5])='4';
+  *(&au8StringBoard[3][9])='5';  
+  *(&au8StringBoard[5][1])='6';
+  *(&au8StringBoard[5][5])='7';
+  *(&au8StringBoard[5][9])='8';
+  
+    for(u8 i=0;i<9;i++)
+  {
+    DebugPrintf(au8StringBoard[i]);
+  }
+  
+  UserApp1_pfStateMachine = UserApp1SM_Idle;
+  }
+}
+     
 /*-------------------------------------------------------------------------------------------------------------------*/
 /* Handle an error */
 static void UserApp1SM_Error(void)          

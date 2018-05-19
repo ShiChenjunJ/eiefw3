@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=-233773570
+Checksum=803198399
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -24,10 +24,15 @@ CStepIntDis=_ 0
 TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
 TracePortSize=0x00000000
-[array_types]
-Fmt0=u8[100]	4	0
 [watch_formats]
-Fmt0={W}1:u8TMessage	3	0
+Fmt0={W}2:u8Text	4	0
+Fmt1={W}3:G_u8DebugScanfCharCount	3	0
+Fmt2={W}3:u8Test	4	0
+Fmt3={W}3:u8Wait	3	0
+Fmt4={W}3:u8WaitTime	3	0
+Fmt5={W}3:~1	4	0
+Fmt6={W}4:u32Byte	4	0
+Fmt7={W}4:u8Test	4	0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -48,10 +53,11 @@ mode=0
 [Breakpoints2]
 Count=0
 [Aliases]
-A0=_ "D:\github_download\eiefw3\SAM3U2\firmware_ascii\application\main.c" ""
-A1=_ "D:\github_download\eiefw3\SAM3U2\firmware_ascii\drivers\sdcard.c" ""
-A2=_ "D:\github_download\eiefw3\SAM3U2\firmware_common\cmsis\core_cm3.h" ""
-A3=_ "D:\github_download\eiefw3\SAM3U2\firmware_common\drivers\interrupts.c" ""
-A4=_ "D:\github_download\eiefw3\SAM3U2\firmware_common\drivers\timer.c" ""
-Count=5
-SuppressDialog=1
+A0=_ "D:\8.Github\eiefw3\SAM3U2\firmware_ascii\application\main.c" ""
+A1=_ "D:\8.Github\eiefw3\SAM3U2\firmware_ascii\drivers\sdcard.c" ""
+A2=_ "D:\8.Github\eiefw3\SAM3U2\firmware_common\cmsis\core_cm3.h" ""
+A3=_ "D:\8.Github\eiefw3\SAM3U2\firmware_common\drivers\buttons.c" ""
+A4=_ "D:\8.Github\eiefw3\SAM3U2\firmware_common\drivers\interrupts.c" ""
+A5=_ "D:\8.Github\eiefw3\SAM3U2\firmware_common\drivers\timer.c" ""
+Count=6
+SuppressDialog=0

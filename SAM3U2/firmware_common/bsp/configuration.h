@@ -92,6 +92,9 @@ Includes
 #include "user_app2.h"
 #include "user_app3.h"
 
+
+
+
 /**********************************************************************************************************************
 !!!!! External device peripheral assignments
 ***********************************************************************************************************************/
@@ -953,7 +956,7 @@ SPI slave mode to communicate with an ANT device.
     03 [0] ENDRX End of Receiver Transfer (PDC) interrupt not enabled
     02 [0] RXBRK Break Received interrupt not enabled
     01 [0] TXRDY Transmitter Ready interrupt not enabled YET
-    00 [0] RXRDY Receiver Ready interrupt enabled 
+    00 [1] RXRDY Receiver Ready interrupt enabled 
 */
 
 /* USART Interrupt Disable Register - Page 743 */

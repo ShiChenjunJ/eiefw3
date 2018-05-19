@@ -220,9 +220,9 @@ void nrfInterfaceInitialize(void)
   NRF_SRDY_DEASSERT();
 
   /* Configure the SSP resource to be used for the application */
-  nrfInterface_sSspConfig.SspPeripheral      = USART2;/*NRF_SPI;*/
-  nrfInterface_sSspConfig.pCsGpioAddress     = AT91C_BASE_PIOB;/*NRF_SPI_CS_GPIO;*/
-  nrfInterface_sSspConfig.u32CsPin           = 0x0040000;/*NRF_SPI_CS_PIN;*/
+  nrfInterface_sSspConfig.SspPeripheral      = NRF_SPI;
+  nrfInterface_sSspConfig.pCsGpioAddress     = NRF_SPI_CS_GPIO;
+  nrfInterface_sSspConfig.u32CsPin           = NRF_SPI_CS_PIN;
   nrfInterface_sSspConfig.eBitOrder          = LSB_FIRST;
   nrfInterface_sSspConfig.eSspMode           = SPI_SLAVE_FLOW_CONTROL;
   nrfInterface_sSspConfig.pu8RxBufferAddress = nrfInterface_au8RxBuffer;
@@ -232,8 +232,7 @@ void nrfInterfaceInitialize(void)
   nrfInterface_sSspConfig.fnSlaveRxFlowCallback = nrfRxFlowControlCallback;
 
   nrfInterface_Ssp = SspRequest(&nrfInterface_sSspConfig);
- 
-  /*NRF_SSP_FLAGS = 0;*/
+  NRF_SSP_FLAGS = 0;
   
   /* Release the nRF51422 reset by returning the pin to an input */
   AT91C_BASE_PIOB->PIO_ODR = PB_21_ANT_RESET;

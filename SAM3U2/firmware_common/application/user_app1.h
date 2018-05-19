@@ -21,7 +21,7 @@ To start a new task using this user_app1 as a template:
 /**********************************************************************************************************************
 Type Definitions
 **********************************************************************************************************************/
-
+typedef enum {PCplayer=0,IPHONEplayer} PlayerType;
 
 /**********************************************************************************************************************
 Function Declarations
@@ -46,14 +46,17 @@ void SlaveRx(void);
 void SlaveTx(void);
 bool CheckBoard(u8 u8Location,u8 *pau8Board);
 bool PrintBoard(u8 u8Location,u8 u8ChessPlayer);
+void CheckWinner(u8 *u8Board,PlayerType Player);
+void Printfgame(void);
 /***********************************************************************************************************************
 State Machine Declarations
 ***********************************************************************************************************************/
 static void UserApp1SM_Idle(void);    
 static void UserApp1SM_Error(void);         
-
-
-
+static void UserApp1SM_ReStart(void);
+static void Chat(void);
+static void UserApp1SM_Delay(void);
+static void UserApp1SM_PHONE2(void);
 /**********************************************************************************************************************
 Constants / Definitions
 **********************************************************************************************************************/

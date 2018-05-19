@@ -33,11 +33,11 @@
         </option>
         <option>
           <name>MacOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>MacFile</name>
-          <state>F:\EIE\EIE-GIT\eiefw3\SAM3U2\firmware_ascii\iar_7_20_1\Debug\exec.mac</state>
+          <state></state>
         </option>
         <option>
           <name>MemOverride</name>
@@ -57,11 +57,11 @@
         </option>
         <option>
           <name>CExtraOptionsCheck</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CExtraOptions</name>
-          <state>- -drv_vector_table_base=0x0</state>
+          <state></state>
         </option>
         <option>
           <name>CFpuProcessor</name>

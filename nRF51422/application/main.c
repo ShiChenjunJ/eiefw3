@@ -75,7 +75,7 @@ contraints but must complete execution regardless of success or failure of start
   ANTIntegrationInitialize();
   BLEIntegrationInitialize();
   bleperipheralInitialize();
-  
+
   /* Application initialization */
   AntttInitialize();
   
