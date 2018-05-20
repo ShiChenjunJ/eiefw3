@@ -175,9 +175,10 @@ static void AntttSM_TXD(void)
   {
   if(NRF_SPI0->EVENTS_READY==1)
   {
+    nrf_delay_us(200000);
      NRF_SPI0->EVENTS_READY=0;
   }
-  nrf_delay_us(100);
+
   NRF_SPI0->TXD=G_u8BLE_RX;
   u32RXD=NRF_SPI0->RXD; 
   }
@@ -193,9 +194,10 @@ static void AntttSM_RXD(void)
  
   if(NRF_SPI0->EVENTS_READY==1)
   {
+     nrf_delay_us(200000);
      NRF_SPI0->EVENTS_READY=0;
   }
-  nrf_delay_us(100);
+
   
   NRF_SPI0->TXD=u32TXD;
   u32RXD=NRF_SPI0->RXD;

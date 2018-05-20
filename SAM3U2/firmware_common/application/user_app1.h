@@ -55,6 +55,7 @@ static void UserApp1SM_Idle(void);
 static void UserApp1SM_Error(void);         
 static void UserApp1SM_ReStart(void);
 static void Chat(void);
+static void Chat2(void);
 static void UserApp1SM_Delay(void);
 static void UserApp1SM_PHONE2(void);
 /**********************************************************************************************************************

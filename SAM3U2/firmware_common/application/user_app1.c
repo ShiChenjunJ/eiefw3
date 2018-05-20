@@ -147,8 +147,8 @@ void UserApp1Initialize(void)
   }
   /* If good initialization, set state to Idle */
   if( 1 )
-  { UserApp1_pfStateMachine = UserApp1SM_Delay;
-    /*UserApp1_pfStateMachine = UserApp1SM_Idle;*/
+  { /*UserApp1_pfStateMachine = UserApp1SM_Delay;*/
+    UserApp1_pfStateMachine = UserApp1SM_Idle;
   }
   else
   {
@@ -185,6 +185,7 @@ void UserApp1RunActiveState(void)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void SlaveRx(void)
 {
+  /*
     if(au8RxBuffer[0]==0xF1)
     {
       AT91C_BASE_PIOB->PIO_SODR=0x00800000;
@@ -195,7 +196,7 @@ void SlaveRx(void)
       UserApp1_pfStateMachine=UserApp1SM_Delay;
       return;
     }
-    
+   */
       if((au8RxBuffer[0]>=0)&&(au8RxBuffer[0]<=8))
       {
           AT91C_BASE_PIOB->PIO_SODR=0x00800000;
@@ -204,7 +205,7 @@ void SlaveRx(void)
           u8PHOload=au8RxBuffer[0];
           u8TMessage=0xFF;
           au8RxBuffer[0]=0xFF;
-          UserApp1_pfStateMachine=UserApp1SM_PHONE2;
+          /*UserApp1_pfStateMachine=UserApp1SM_PHONE2;*/
       }
 }
 void SlaveTx(void)
@@ -358,14 +359,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+0)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   }
  
   /*345*/
@@ -373,15 +378,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+3)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   }  
 
   /*678*/
@@ -389,15 +397,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+6)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   }  
 
   /*036*/
@@ -405,15 +416,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+0)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   }  
   
   /*147*/
@@ -421,15 +435,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+1)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   } 
 
   /*258*/
@@ -437,15 +454,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+2)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   }
   
 
@@ -454,15 +474,18 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
   {
     if(*(u8Board+0)==0x0A)
     {
-      DebugPrintf("\n\rPC winner");
+      DebugLineFeed();
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
-      DebugPrintf("\n\rPhone winner");
+      DebugLineFeed();
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   } 
 
   /*246*/
@@ -471,28 +494,29 @@ void CheckWinner(u8 *u8Board,PlayerType Player)
     if(*(u8Board+2)==0x0A)
     {
       DebugLineFeed();
-      DebugPrintf("PC-winner");
+      DebugPrintf("PC winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
     if(*(u8Board+1)==0x0B)
     {
       DebugLineFeed();
-      DebugPrintf("Phone-winner");
+      DebugPrintf("Phone winner");
+      UserApp1_pfStateMachine = UserApp1SM_ReStart;
+      return;
     }
-    
-     UserApp1_pfStateMachine = UserApp1SM_ReStart;
-     return;
   }   
 
   if(Player==PCplayer)
   {
+    /*
     AT91C_BASE_PIOB->PIO_SODR=0x00800000;
     AT91C_BASE_PIOB->PIO_CODR=0x01000000;
-    UserApp1_pfStateMachine = Chat;
+    */
+    UserApp1_pfStateMachine = UserApp1SM_Delay;
   }
   else if(Player==IPHONEplayer)
   {   
-    AT91C_BASE_PIOB->PIO_SODR=0x00800000;
-    AT91C_BASE_PIOB->PIO_SODR=0x01000000;
     UserApp1_pfStateMachine = UserApp1SM_Idle;
   }
 
@@ -506,12 +530,22 @@ State Machine Function Definitions
 static void Chat(void)
 {
   u32 u32PB22=(AT91C_BASE_PIOB->PIO_PDSR&0x00400000);
+  
   if(!u32PB22)
   {
-    SspWriteByte(MyTaskSsp,u8TMessage);
+    u32Time=G_u32SystemTime1ms;
+    UserApp1_pfStateMachine=Chat2;
   }
 }
 
+static void Chat2(void)
+{
+  if(IsTimeUp(&u32Time,200))
+  {
+    /*SspWriteByte(MyTaskSsp,u8TMessage);*/
+    u32Time=G_u32SystemTime1ms;
+  } 
+}
 static void UserApp1SM_Idle(void)
 {  
   DebugScanf(u8DebugMes);
@@ -526,7 +560,7 @@ static void UserApp1SM_Idle(void)
           if(PrintBoard(u8TMessage,1))
           {
             Printfgame();
-            /*CheckWinner(au8Checkerboard,PCplayer);*/
+            CheckWinner(au8Checkerboard,PCplayer);
           }
         }
       else
@@ -551,7 +585,7 @@ static void UserApp1SM_PHONE2(void)
         if((PrintBoard(u8PHOload,0)))
         {
         Printfgame();  
-        /*CheckWinner(au8Checkerboard,IPHONEplayer);*/
+        CheckWinner(au8Checkerboard,IPHONEplayer);
         }
       }
     else
@@ -570,7 +604,8 @@ static void UserApp1SM_Delay(void)
   {
      AT91C_BASE_PIOB->PIO_CODR=0x00800000;
      AT91C_BASE_PIOB->PIO_SODR=0x01000000;
-     UserApp1_pfStateMachine = Chat;
+     UserApp1_pfStateMachine = UserApp1SM_PHONE2;
+     /*UserApp1_pfStateMachine = Chat;*/
   }
 }
 
@@ -600,10 +635,11 @@ static void UserApp1SM_ReStart(void)
   *(&au8StringBoard[5][1])='6';
   *(&au8StringBoard[5][5])='7';
   *(&au8StringBoard[5][9])='8';
-  
+  DebugLineFeed();
     for(u8 i=0;i<9;i++)
   {
     DebugPrintf(au8StringBoard[i]);
+    DebugLineFeed();
   }
   
   UserApp1_pfStateMachine = UserApp1SM_Idle;
